@@ -17,6 +17,7 @@ const App = () => {
     if (user?.id) {
       setTelegramId(user.id); // Store the Telegram user ID
       console.log("Telegram user ID:", user.id);
+
       // Check Telegram ID in the database
       checkTelegramId(user.id);
     } else {
@@ -28,39 +29,41 @@ const App = () => {
 
   const checkTelegramId = async (id) => {
     try {
-      const response = await axios.post(
-        "https://your-backend-url.com/check-telegram-id",
-        { telegramId: id }
-      );
+      const response = await axios.post("/api/check-telegram-id", {
+        telegramId: id,
+      });
       if (response.data.exists) {
-        setIsPhoneFieldVisible(true); // Show phone number input field if ID is found
-        setMessage("Telegram ID verified. Please enter your phone number.");
+        setMessage("Success! Your Telegram ID is already registered.");
       } else {
-        setMessage("Telegram ID not found. Please contact support.");
+        setIsPhoneFieldVisible(true);
       }
     } catch (error) {
       console.error("Error checking Telegram ID:", error);
-      setMessage("Error verifying Telegram ID. Please try again.");
+      setMessage("An error occurred while checking your Telegram ID.");
     }
   };
 
   const handlePhoneNumberSubmit = async () => {
+    if (!inputNumber) {
+      setMessage("Please enter a valid phone number.");
+      return;
+    }
+
     try {
-      const response = await axios.post(
-        "https://your-backend-url.com/verify-phone-number",
-        {
-          phoneNumber: inputNumber,
-          telegramId,
-        }
-      );
+      const response = await axios.post("/api/register-phone-number", {
+        telegramId,
+        phoneNumber: inputNumber,
+      });
+
       if (response.data.success) {
-        setMessage("Verification code sent to your phone number!");
+        setMessage("Your phone number has been successfully registered!");
+        setIsPhoneFieldVisible(false);
       } else {
-        setMessage("Phone number not found. Please try again.");
+        setMessage("Failed to register your phone number. Please try again.");
       }
     } catch (error) {
-      console.error("Error verifying phone number:", error);
-      setMessage("Error sending verification code. Please try again.");
+      console.error("Error submitting phone number:", error);
+      setMessage("An error occurred while submitting your phone number.");
     }
   };
 
