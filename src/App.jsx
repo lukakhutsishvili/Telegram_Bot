@@ -32,7 +32,7 @@ const App = () => {
       const response = await axios.post("/api/check-telegram-id", {
         telegramId: id,
       });
-      if (response.data.exists) {
+      if (!response.data.exists) {
         setMessage("Success! Your Telegram ID is already registered.");
       } else {
         setIsPhoneFieldVisible(true);
