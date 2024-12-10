@@ -7,13 +7,16 @@ const BOT_TOKEN =
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
-    Authorization: `Bearer ${BOT_TOKEN}`,
+    Authorization: `${BOT_TOKEN}`,
   },
 });
 
 export const authenticateBot = async (username, password) => {
   try {
-    const response = await apiClient.put("/bot/auth", { username, password });
+    const response = await apiClient.get({ BASE_URL } + "/bot/auth", {
+      username,
+      password,
+    });
     return response.data;
   } catch (error) {
     console.error("Error authenticating bot:", error);
@@ -30,5 +33,3 @@ export const registerBot = async (phone) => {
     throw error;
   }
 };
-
-// Add more functions for other endpoints

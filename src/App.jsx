@@ -1,93 +1,59 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { authenticateBot, registerBot } from "./apiClient";
 
 const App = () => {
-  const [isReady, setIsReady] = useState(false);
-  const [telegramId, setTelegramId] = useState(null);
-  const [inputNumber, setInputNumber] = useState("");
-  const [message, setMessage] = useState("");
-  const [isPhoneFieldVisible, setIsPhoneFieldVisible] = useState(false);
+  const [telegramID, setTelegramID] = useState(null);
+  const [authStatus, setAuthStatus] = useState(null);
+  const [registerStatus, setRegisterStatus] = useState(null);
+  const [phone, setPhone] = useState("");
 
+  // Initialize Telegram Web App
   useEffect(() => {
     const tg = window.Telegram.WebApp;
-
-    tg.ready(); // Initialize Telegram Web App
-    const user = tg.initDataUnsafe?.user;
-
-    if (user?.id) {
-      setTelegramId(user.id); // Store the Telegram user ID
-      console.log("Telegram user ID:", user.id);
-
-      // Check Telegram ID in the database
-      checkTelegramId(user.id);
-    } else {
-      console.warn("Telegram user ID not available");
-    }
-
-    setIsReady(true); // Trigger rendering after initialization
+    tg.expand(); // Expands the WebApp to full screen
+    const userID = tg.initDataUnsafe?.user?.id;
+    setTelegramID(userID);
   }, []);
 
-  const checkTelegramId = async (id) => {
-    try {
-      const response = await axios.post("/api/check-telegram-id", {
-        telegramId: id,
-      });
-      if (!response.data.exists) {
-        setMessage("Success! Your Telegram ID is already registered.");
-      } else {
-        setIsPhoneFieldVisible(true);
-      }
-    } catch (error) {
-      console.error("Error checking Telegram ID:", error);
-      setMessage("An error occurred while checking your Telegram ID.");
-    }
-  };
-
-  const handlePhoneNumberSubmit = async () => {
-    if (!inputNumber) {
-      setMessage("Please enter a valid phone number.");
+  const handleSignIn = async () => {
+    if (!telegramID) {
+      setAuthStatus("Telegram user data not available.");
       return;
     }
-
     try {
-      const response = await axios.post("/api/register-phone-number", {
-        telegramId,
-        phoneNumber: inputNumber,
-      });
-
-      if (response.data.success) {
-        setMessage("Your phone number has been successfully registered!");
-        setIsPhoneFieldVisible(false);
-      } else {
-        setMessage("Failed to register your phone number. Please try again.");
-      }
+      const data = await authenticateBot();
+      setAuthStatus(`Authentication Successful: ${JSON.stringify(data)}`);
+      console.log(authStatus);
     } catch (error) {
-      console.error("Error submitting phone number:", error);
-      setMessage("An error occurred while submitting your phone number.");
+      setAuthStatus(`Error: ${error.message}`);
     }
   };
 
-  if (!isReady) {
-    return <div>Loading...</div>; // Optional loading state
-  }
-
   return (
-    <div>
-      <h1>Welcome to Telegram Web App</h1>
-      <h2>Your Telegram ID: {telegramId || "Unavailable"}</h2>
-      {message && <p>{message}</p>}
-      {isPhoneFieldVisible && (
-        <>
-          <h2>Enter Your Phone Number:</h2>
+    <div className="app-container">
+      <h1>Telegram Web App</h1>
+      <div>
+        <h2>Welcome</h2>
+        <p>Username</p>
+      </div>
+      <div>
+        <h2>Sign In</h2>
+        <button onClick={handleSignIn}>Sign In with Telegram</button>
+        {authStatus && <p>{authStatus}</p>}
+      </div>
+      <div>
+        <h2>Register Bot</h2>
+        <label>
+          Phone Number:
           <input
             type="text"
-            value={inputNumber}
-            onChange={(e) => setInputNumber(e.target.value)}
-            placeholder="Enter your phone number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
           />
-          <button onClick={handlePhoneNumberSubmit}>Submit</button>
-        </>
-      )}
+        </label>
+        <button>Register</button>
+        {registerStatus && <p>{registerStatus}</p>}
+      </div>
     </div>
   );
 };

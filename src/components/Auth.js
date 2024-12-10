@@ -1,37 +1,36 @@
 import React, { useState } from "react";
-import { authenticateBot } from "../services/api";
+import axios from "axios";
 
-const Auth = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+const Auth = ({ setStep, setTelegramId }) => {
+  const [telegramIdInput, setTelegramIdInput] = useState("");
 
   const handleAuth = async () => {
     try {
-      const data = await authenticateBot(username, password);
-      setMessage(`Authenticated: ${data.status}`);
+      const response = await axios.post("/auth", {
+        telegram_id: telegramIdInput,
+      });
+      setTelegramId(telegramIdInput);
+      alert("User authenticated successfully.");
     } catch (error) {
-      setMessage("Authentication failed.");
+      if (error.response && error.response.status === 404) {
+        alert("User not found. Proceed to phone input.");
+        setTelegramId(telegramIdInput);
+        setStep("phone");
+      } else {
+        alert("Authentication failed.");
+      }
     }
   };
 
   return (
     <div>
-      <h1>Authenticate Bot</h1>
       <input
         type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter Telegram ID"
+        value={telegramIdInput}
+        onChange={(e) => setTelegramIdInput(e.target.value)}
       />
       <button onClick={handleAuth}>Authenticate</button>
-      {message && <p>{message}</p>}
     </div>
   );
 };
