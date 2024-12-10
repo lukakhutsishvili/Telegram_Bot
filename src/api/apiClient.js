@@ -1,15 +1,16 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.BASE_URL;
-const BOT_TOKEN = import.meta.env.BOT_TOKEN;
-const USERNAME = import.meta.env.API_USERNAME;
-const PASSWORD = import.meta.env.API_PASSWORD;
+const BASE_URL = "https://bo.delivo.ge/delivo_test/hs";
+const BOT_TOKEN = "7430139533:AAHuB49MAR9wGL0o3Zz9clbDIytpYEeP_H4";
+const USERNAME = "telegram_bot";
+const PASSWORD = "657152";
+console.log(BOT_TOKEN);
 
 const apiClient = axios.create({
-  baseURL: `bot${BOT_TOKEN} + ${BASE_URL}`,
-  auth: {
-    username: USERNAME,
-    password: PASSWORD,
+  baseURL: BASE_URL,
+  headers: {
+    Authorization: `${BOT_TOKEN}`,
+    "Content-Type": "application/json",
   },
 });
 
