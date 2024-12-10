@@ -13,7 +13,7 @@ const apiClient = axios.create({
 
 export const authenticateBot = async (username, password) => {
   try {
-    const response = await apiClient.get({ BASE_URL } + "/bot/auth", {
+    const response = await apiClient.get("/bot/auth", {
       username,
       password,
     });

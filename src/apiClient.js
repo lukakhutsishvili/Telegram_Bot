@@ -25,14 +25,36 @@ export const authenticateBot = async () => {
   }
 };
 
-export const registerBot = async (phone) => {
+export const getOrder = async () => {
   try {
-    const response = await apiClient.post("/bot/register_bot", {
-      phone,
-    });
+    const response = await apiClient.get("/bot/getorder");
     return response.data;
   } catch (error) {
-    console.error("Error registering bot:", error);
+    console.error("Error fetching order:", error);
     throw error;
   }
 };
+
+// export const registerNumber = async (phone) => {
+//   const authData = {
+//     telegram_id: "6087086146",
+//     phone_number: phone,
+//     type: "1",
+//   };
+
+//   try {
+//     const response = await apiClient.post("/bot/register_bot", authData);
+//     if (response.status === 200) {
+//       return response.data;
+//     } else {
+//       console.error("Error: Received unexpected status code", response.status);
+//       throw new Error("Unexpected response from the server.");
+//     }
+//   } catch (error) {
+//     console.error(
+//       "Error registering phone number:",
+//       error.response?.data || error.message
+//     );
+//     throw error;
+//   }
+// };
