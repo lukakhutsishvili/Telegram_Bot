@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getRequest } from "./api/apiClient";
+import { handleSignIn } from "./api/handlers";
 
 const App = () => {
   const [telegramID, setTelegramID] = useState(6087086146);
@@ -7,21 +7,6 @@ const App = () => {
   const [registerStatus, setRegisterStatus] = useState(null);
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
-
-
-   const handleSignIn = async (telegramID) => {
-    try {
-      console.log(telegramID);
-      if (telegramID) {
-        const response = await getRequest("/bot/auth", { telegramID });
-        console.log(response);
-      }
-    } catch (error) {
-      setError(error.message)
-      console.log(`Error: ${error.message}`);
-    }
-  };
-  
 
   // Initialize Telegram Web App
   useEffect(() => {
@@ -38,17 +23,16 @@ const App = () => {
         if (userData && userData.id) {
           // setTelegramID(userData.id); // Set Telegram ID
         } else {
-        //   setError("Unable to fetch Telegram user data.");
-         }
+          setError("Unable to fetch Telegram user data.");
+        }
       } else {
-        // setError("Telegram WebApp API is not available.");
+        setError("Telegram WebApp API is not available.");
       }
     } catch (err) {
-      // setError(`Error: ${err.message}`);
+      setError(`Error: ${err.message}`);
     }
   }, []);
 
-  console.log(error)
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
