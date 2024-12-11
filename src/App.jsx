@@ -8,6 +8,21 @@ const App = () => {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
 
+
+   const handleSignIn = async (telegramID) => {
+    try {
+      console.log(telegramID);
+      if (telegramID) {
+        const response = await getRequest("/bot/auth", { telegramID });
+        console.log(response);
+      }
+    } catch (error) {
+      setError(error.message)
+      console.log(`Error: ${error.message}`);
+    }
+  };
+  
+
   // Initialize Telegram Web App
   useEffect(() => {
     try {
@@ -23,13 +38,13 @@ const App = () => {
         if (userData && userData.id) {
           // setTelegramID(userData.id); // Set Telegram ID
         } else {
-          setError("Unable to fetch Telegram user data.");
-        }
+        //   setError("Unable to fetch Telegram user data.");
+         }
       } else {
-        setError("Telegram WebApp API is not available.");
+        // setError("Telegram WebApp API is not available.");
       }
     } catch (err) {
-      setError(`Error: ${err.message}`);
+      // setError(`Error: ${err.message}`);
     }
   }, []);
 
